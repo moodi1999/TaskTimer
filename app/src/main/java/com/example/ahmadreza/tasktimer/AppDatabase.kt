@@ -3,6 +3,8 @@ package com.example.ahmadreza.tasktimer
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import java.lang.IllegalStateException
 
 /**
  * Created by ahmadreza on 8/23/18.
@@ -16,6 +18,15 @@ class AppDatabase private constructor(context: Context) : SQLiteOpenHelper(conte
         val DATABASE_NAME = "TaskTimer.db"
         val DATABASE_VERSION = 1
         private var instance: AppDatabase? = null
+        fun getInstance(context: Context): AppDatabase {
+            if (instance == null){
+                println("AppDatabase.getInstance create new instance")
+                Log.d("Appdatabade", "getInstance: start")
+                instance = AppDatabase(context)
+            }
+
+            return instance!!
+        }
     }
 
     /**
@@ -25,31 +36,32 @@ class AppDatabase private constructor(context: Context) : SQLiteOpenHelper(conte
      * @return a SQLite database helper object
      *
      */
-    fun getInstance(context: Context): AppDatabase {
-        if (instance == null){
-            println("AppDatabase.getInstance create new instance")
-            instance = AppDatabase(context)
-        }
 
-        return instance!!
-    }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        println("AppDatabase.onCreate start")
+        Log.d("AppDatabase", "onCreate: Start")
         var sSQL: String;
 //        sSQL = "CREATE TABLE Tasks (_id INTEGER PRIMARY KEY NOT NULL,  Name TEXT NOT NULL, Descriprion TEXT, SortOrder INTEGER, CategoryID INTEGER);"
 
-        sSQL = "CREATE TABLE " + TaskContract.TABLE_NAME + "(" +
-                TaskContract.Columns._ID +
-                TaskContract.Columns.TASKS_NAME +
-                TaskContract.Columns.TASKS_DESCRIPTION +
-                TaskContract.Columns.TASK_SORTORDER
+        sSQL = "CREATE TABLE " + TaskContract.TABLE_NAME + " (" +
+                TaskContract.Columns._ID + " INTEGER PRIMARY KEY NOT NULL, " +
+                TaskContract.Columns.TASKS_NAME + " TEXT NOT NULL, " +
+                TaskContract.Columns.TASKS_DESCRIPTION + " TEXT, " +
+                TaskContract.Columns.TASK_SORTORDER + " INTEGER);"
         println("AppDatabase. $sSQL")
         db!!.execSQL(sSQL)
-        println("AppDatabase.onCreate End")
+        Log.d("AppDatabase", "onCreate: End")
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        println("AppDatabase.onUpgrade starts")
+        when(oldVersion){
+            1 -> {
+                //upgrade logic from version 1
+            }
+            else -> {
+                throw IllegalStateException("onUpgrade() whith unknown newVersion" + newVersion)
+            }
+        }
     }
 }
