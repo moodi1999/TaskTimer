@@ -10,7 +10,7 @@ import java.lang.IllegalStateException
  * Created by ahmadreza on 8/23/18.
  *
  * Basic Database class for application.
- * the only class that should use this as Appprovider.
+ * the only class that should use this is [AppProvider].
  */
 class AppDatabase private constructor(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -18,6 +18,13 @@ class AppDatabase private constructor(context: Context) : SQLiteOpenHelper(conte
         val DATABASE_NAME = "TaskTimer.db"
         val DATABASE_VERSION = 1
         private var instance: AppDatabase? = null
+        /**
+         * Get an instance of the app's singleton database helper object
+         *
+         * @param [context] the content providers context
+         * @return a SQLite database helper object
+         *
+         */
         fun getInstance(context: Context): AppDatabase {
             if (instance == null){
                 println("AppDatabase.getInstance create new instance")
@@ -29,16 +36,9 @@ class AppDatabase private constructor(context: Context) : SQLiteOpenHelper(conte
         }
     }
 
-    /**
-     * Get an instance of the app's singleton database helper object
-     *
-     * @param context the content providers context
-     * @return a SQLite database helper object
-     *
-     */
-
 
     override fun onCreate(db: SQLiteDatabase?) {
+
         Log.d("AppDatabase", "onCreate: Start")
         var sSQL: String;
 //        sSQL = "CREATE TABLE Tasks (_id INTEGER PRIMARY KEY NOT NULL,  Name TEXT NOT NULL, Descriprion TEXT, SortOrder INTEGER, CategoryID INTEGER);"

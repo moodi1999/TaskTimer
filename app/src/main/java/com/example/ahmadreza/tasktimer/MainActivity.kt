@@ -1,12 +1,11 @@
 package com.example.ahmadreza.tasktimer
 
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -16,8 +15,30 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val appDataBase = AppDatabase.getInstance(this)
-        val sqldb = appDataBase.readableDatabase
+        val projection = arrayOf(TaskContract.Columns.TASKS_NAME, TaskContract.Columns.TASKS_DESCRIPTION)
+
+        val contentresolver = contentResolver
+        val cursor = contentresolver.query(TaskContract.CONTENT_URI,
+                projection,
+                null,
+                null,
+                TaskContract.Columns.TASKS_NAME)
+
+        if (cursor != null) {
+            Log.d("MainActivity", "onCreate: number of rows ${cursor.count}")
+            while (cursor.moveToNext()) {
+                for (i in 0 until cursor.columnCount) {
+                    Log.d("MainActivity", "onCreate: ${cursor.getColumnName(i)}: ${cursor.getString(i)}")
+                }
+                Log.d("MainActivity", "onCreate: =================================")
+            }
+
+            cursor.close()
+        }
+
+//        val appDataBase = AppDatabase.getInstance(this)
+//        val sqldb = appDataBase.readableDatabase
+
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
