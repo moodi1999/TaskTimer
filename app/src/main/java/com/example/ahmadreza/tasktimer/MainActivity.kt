@@ -1,5 +1,6 @@
 package com.example.ahmadreza.tasktimer
 
+import android.content.ContentValues
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -15,12 +16,31 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        val projection = arrayOf(TaskContract.Columns.TASKS_NAME, TaskContract.Columns.TASKS_DESCRIPTION)
+
+        val projection = arrayOf(TaskContract.Columns._ID,
+                TaskContract.Columns.TASKS_NAME,
+                TaskContract.Columns.TASKS_DESCRIPTION,
+                TaskContract.Columns.TASK_SORTORDER)
+
+        val values = ContentValues()
+        values.run {
+            put(TaskContract.Columns.TASKS_NAME, "Content Provider")
+            put(TaskContract.Columns.TASKS_DESCRIPTION, "record content provider video")
+        }
+        val count = contentResolver.update(TaskContract.buildTaskUri(4), values, null, null)
+        Log.d("MainActivity", "onCreate: count = $count")
+       /* values.run {
+            put(TaskContract.Columns.TASKS_NAME, "New Task 1")
+            put(TaskContract.Columns.TASKS_DESCRIPTION, "New Description 1")
+            put(TaskContract.Columns.TASK_SORTORDER, 2)
+        }
+        val uri = contentResolver.insert(TaskContract.CONTENT_URI, values)
+*/
         val cursor = contentResolver.query(TaskContract.CONTENT_URI,
                 projection,
                 null,
                 null,
-                TaskContract.Columns._ID)
+                TaskContract.Columns.TASK_SORTORDER)
 
         if (cursor != null) {
             Log.d("MainActivity", "onCreate: number of rows ${cursor.count}")
@@ -32,8 +52,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             cursor.close()
-        }
-        else{
+        } else {
             Log.d("MainActivity", "onCreate: cursor is null")
         }
 

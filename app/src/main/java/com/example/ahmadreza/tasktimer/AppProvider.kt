@@ -143,12 +143,106 @@ class AppProvider : ContentProvider() {
     }
 
     override fun update(uri: Uri?, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("AppProvider", "update: called with uri : $uri")
+        val match = sUriMatcher.match(uri)
+        println("match = ${match}")
+        var db: SQLiteDatabase? = null
+        var count: Int
+
+        var selectionCriteria: String
+
+        when (match) {
+            TASKS -> {
+                db = mOpenHelper?.writableDatabase
+                count = db!!.update(TaskContract.TABLE_NAME, values, selection, selectionArgs)
+            }
+
+            TASKS_ID -> {
+                db = mOpenHelper!!.writableDatabase
+                var taskId = TaskContract.getTaskId(uri!!)
+                selectionCriteria = TaskContract.Columns._ID + " = " + taskId
+                if (selection != null && selection.isNotEmpty()) {
+                    selectionCriteria += " AND (" + selection + ")"
+                }
+                count = db!!.update(TaskContract.TABLE_NAME, values, selectionCriteria, selectionArgs)
+            }
+
+        /*   TASKS -> {
+               db = mOpenHelper?.writableDatabase
+               count = db!!.update(TaskContract.TABLE_NAME, values, selection, selectionArgs)
+           }
+
+           TASKS_ID -> {
+               db = mOpenHelper!!.writableDatabase
+               var taskId = TaskContract.getTaskId(uri!!)
+               selectionCriteria = TaskContract.Columns._ID + " = " + taskId
+               if (selection != null && selection.isNotEmpty()){
+                   selectionCriteria += " AND (" + selection + ")"
+               }
+               count = db!!.update(TaskContract.TABLE_NAME, values, selectionCriteria, selectionArgs)
+           }
+           */
+
+            else -> {
+                throw IllegalArgumentException("Unknown uri $uri")
+            }
+        }
+
+        Log.d("AppProvider", "update() returned = ${count}")
+        return count
     }
 
     override fun delete(uri: Uri?, selection: String?, selectionArgs: Array<out String>?): Int {
 
+        Log.d("AppProvider", "Delete: called with uri : $uri")
+        val match = sUriMatcher.match(uri)
+        println("match = ${match}")
+        var db: SQLiteDatabase? = null
+        var count: Int
+
+        var selectionCriteria: String
+
+        when (match) {
+            TASKS -> {
+                db = mOpenHelper?.writableDatabase
+                count = db!!.delete(TaskContract.TABLE_NAME, selection, selectionArgs)
+            }
+
+            TASKS_ID -> {
+                db = mOpenHelper!!.writableDatabase
+                var taskId = TaskContract.getTaskId(uri!!)
+                selectionCriteria = TaskContract.Columns._ID + " = " + taskId
+                if (selection != null && selection.isNotEmpty()) {
+                    selectionCriteria += " AND (" + selection + ")"
+                }
+                count = db!!.delete(TaskContract.TABLE_NAME, selectionCriteria, selectionArgs)
+            }
+
+        /*   TASKS -> {
+               db = mOpenHelper?.writableDatabase
+               count = db!!.delete(TaskContract.TABLE_NAME, selection, selectionArgs)
+           }
+
+           TASKS_ID -> {
+               db = mOpenHelper!!.writableDatabase
+               var taskId = TaskContract.getTaskId(uri!!)
+               selectionCriteria = TaskContract.Columns._ID + " = " + taskId
+               if (selection != null && selection.isNotEmpty()){
+                   selectionCriteria += " AND (" + selection + ")"
+               }
+               count = db!!.delete(TaskContract.TABLE_NAME, selectionCriteria, selectionArgs)
+           }
+           */
+
+            else -> {
+                throw IllegalArgumentException("Unknown uri $uri")
+            }
+        }
+
+        Log.d("AppProvider", "update() returned = ${count}")
+        return count
     }
+
 
     override fun getType(uri: Uri?): String {
         Log.d("AppProvider", "query: called with URI  $uri")
