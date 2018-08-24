@@ -11,18 +11,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("MainActivity", "onCreate: Start")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
         val projection = arrayOf(TaskContract.Columns.TASKS_NAME, TaskContract.Columns.TASKS_DESCRIPTION)
-
-        val contentresolver = contentResolver
-        val cursor = contentresolver.query(TaskContract.CONTENT_URI,
+        val cursor = contentResolver.query(TaskContract.CONTENT_URI,
                 projection,
                 null,
                 null,
-                TaskContract.Columns.TASKS_NAME)
+                TaskContract.Columns._ID)
 
         if (cursor != null) {
             Log.d("MainActivity", "onCreate: number of rows ${cursor.count}")
@@ -34,6 +32,9 @@ class MainActivity : AppCompatActivity() {
             }
 
             cursor.close()
+        }
+        else{
+            Log.d("MainActivity", "onCreate: cursor is null")
         }
 
 //        val appDataBase = AppDatabase.getInstance(this)

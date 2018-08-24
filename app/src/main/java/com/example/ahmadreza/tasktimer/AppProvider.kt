@@ -4,6 +4,7 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteQueryBuilder
 import android.net.Uri
 import android.util.Log
@@ -22,7 +23,7 @@ class AppProvider : ContentProvider() {
     private var mOpenHelper: AppDatabase? = null
 
     companion object {
-        val CONTENT_AUTHORITY = "com.example.ahmadreza.tasktimer"
+        val CONTENT_AUTHORITY = "com.example.ahmadreza.tasktimer.provider"
         val CONTENT_AUTHORITY_URI = Uri.parse("content://$CONTENT_AUTHORITY")
         val sUriMatcher = buildUriMatcher()
 
@@ -40,7 +41,7 @@ class AppProvider : ContentProvider() {
         private val TASKS_DUARITION = 400
         private val TASKS_DUARITION_ID = 401
 
-        private fun buildUriMatcher(): UriMatcher{
+        private fun buildUriMatcher(): UriMatcher {
             val matcher = UriMatcher(UriMatcher.NO_MATCH)
 
             matcher.run {
@@ -61,7 +62,40 @@ class AppProvider : ContentProvider() {
     }
 
     override fun insert(uri: Uri?, values: ContentValues?): Uri {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("AppProvider", "insert: called with uri = $uri")
+        val match = sUriMatcher.match(uri)
+        println("match is = ${match}")
+
+        val db: SQLiteDatabase
+        var returnUri: Uri? = null
+        var recordId: Long
+
+        when (match) {
+            TASKS -> {
+                db = mOpenHelper!!.writableDatabase
+                recordId = db.insert(TaskContract.TABLE_NAME, null, values)
+                if (recordId >= 0) {
+                    returnUri = TaskContract.buildTaskUri(recordId)
+                } else {
+                    throw android.database.SQLException("Faild to insert $uri")
+                }
+            }
+            TIMINGS -> {
+/*                db = mOpenHelper!!.writableDatabase
+                recordId = db.insert(TaskContract.TABLE_NAME, null, values)
+                if (recordId >= 0) {
+                    returnUri = TaskContract.buildTaskUri(recordId)
+                } else {
+                    throw android.database.SQLException("Faild to insert $uri")
+                }*/
+            }
+
+            else -> throw IllegalArgumentException("Unknown Uri $uri")
+        }
+
+        Log.d("AppProvider", "Exiting insert, returning $returnUri")
+
+        return returnUri!!
     }
 
     override fun query(uri: Uri?, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
@@ -71,7 +105,7 @@ class AppProvider : ContentProvider() {
 
         val queryBuilder = SQLiteQueryBuilder()
 
-        when(match){
+        when (match) {
             TASKS -> queryBuilder.tables = TaskContract.TABLE_NAME
 
             TASKS_ID -> {
@@ -80,19 +114,19 @@ class AppProvider : ContentProvider() {
                 queryBuilder.appendWhere(TaskContract.Columns._ID + " = " + taskId)
             }
 
-       /*     TIMINGS -> queryBuilder.tables = TimingsContrract.TABLE_NAME
-            TIMINGs_ID -> {
-                queryBuilder.tables = TimingsContrract.TABLE_NAME
-                val timingId = TimingsContrract.getTimingId(uri)
-                queryBuilder.appendWhere(TimingsContrract.Columns._ID + " = " + timingId)
-            }
+        /*     TIMINGS -> queryBuilder.tables = TimingsContrract.TABLE_NAME
+             TIMINGs_ID -> {
+                 queryBuilder.tables = TimingsContrract.TABLE_NAME
+                 val timingId = TimingsContrract.getTimingId(uri)
+                 queryBuilder.appendWhere(TimingsContrract.Columns._ID + " = " + timingId)
+             }
 
-            TASKS_DUARITION -> queryBuilder.tables = DuaritionContract.TABLE_NAME
-            TASKS_DUARITION_ID -> {
-                queryBuilder.tables = DuaritionContract.TABLE_NAME
-                val duaritionId = DuaritionContract.getDuaritionId(uri)
-                queryBuilder.appendWhere(DuaritionContract.Columns._ID + " = " + duaritionId)
-            }*/
+             TASKS_DUARITION -> queryBuilder.tables = DuaritionContract.TABLE_NAME
+             TASKS_DUARITION_ID -> {
+                 queryBuilder.tables = DuaritionContract.TABLE_NAME
+                 val duaritionId = DuaritionContract.getDuaritionId(uri)
+                 queryBuilder.appendWhere(DuaritionContract.Columns._ID + " = " + duaritionId)
+             }*/
 
             else -> {
                 throw IllegalArgumentException("Unknown URI: " + uri)
@@ -113,10 +147,32 @@ class AppProvider : ContentProvider() {
     }
 
     override fun delete(uri: Uri?, selection: String?, selectionArgs: Array<out String>?): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun getType(uri: Uri?): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("AppProvider", "query: called with URI  $uri")
+        val match = sUriMatcher.match(uri)
+        Log.d("AppProvider", "query: match is $match")
+
+        return when (match) {
+
+            TASKS -> TaskContract.CONTENT_TYPE
+
+            TASKS_ID -> TaskContract.CONTENT_ITEM_TYPE
+
+        /*    TIMINGS -> TaskContract.CONTENT_TYPE
+
+            TIMINGs_ID ->TaskContract.CONTENT_ITEM_TYPE
+
+            TASKS_DUARITION -> TaskContract.CONTENT_TYPE
+
+            TASKS_DUARITION_ID -> TaskContract.CONTENT_ITEM_TYPE
+    */
+            else -> {
+                throw IllegalArgumentException("Unknown URI: " + uri)
+            }
+        }
+
     }
 }

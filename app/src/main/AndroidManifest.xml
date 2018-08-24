@@ -21,8 +21,8 @@
         </activity>
 
         <provider
-            android:authorities="com.example.ahmadreza.tasktimer.provider"
             android:name="com.example.ahmadreza.tasktimer.AppProvider"
+            android:authorities="com.example.ahmadreza.tasktimer.provider"
             android:exported="false"/>
     </application>
 
