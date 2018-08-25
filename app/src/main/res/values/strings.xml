@@ -9,4 +9,9 @@
     <string name="no_task_message">No Task Selected</string>
     <string name="edit_button_desc" />
     <string name="delete_button_desc" />
+    <string name="addedit_name_hint">name: required</string>
+    <string name="addedit_desc_hont">Task Description: optinal</string>
+    <string name="addedit_sort_hint">Order: sort low to high</string>
+    <string name="addedit_save_text">Save</string>
+    <string name="title_activity_add_edit">AddEditActivity</string>
 </resources>

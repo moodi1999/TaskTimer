@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_add_edit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.example.ahmadreza.tasktimer.AddEditActivityFragment"
+    tools:showIn="@layout/activity_add_edit">
 
 
     <EditText
@@ -42,3 +46,4 @@
         android:drawableStart="@android:drawable/ic_menu_save"
         android:text="@string/addedit_save_text" />
 </LinearLayout>
+
