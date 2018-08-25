@@ -23,19 +23,33 @@ class MainActivity : AppCompatActivity() {
                 TaskContract.Columns.TASK_SORTORDER)
 
         val values = ContentValues()
-        values.run {
+     /*   values.run {
+            put(TaskContract.Columns.TASK_SORTORDER, "99")
+            put(TaskContract.Columns.TASKS_DESCRIPTION, "Compeleted")
+        }
+        val selection = TaskContract.Columns.TASK_SORTORDER + " = " + "2"*/
+
+       /* values.run {
+            put(TaskContract.Columns.TASKS_DESCRIPTION, "For what deletion")
+        }
+        val selection = TaskContract.Columns.TASK_SORTORDER + " = " + "?"
+        var selectionArgs = arrayOf("99")*/
+
+        val count = contentResolver.delete(TaskContract.buildTaskUri(4), null, null)
+        Log.d("MainActivity", "onCreate: count = $count")
+
+        /*values.run {
             put(TaskContract.Columns.TASKS_NAME, "Content Provider")
             put(TaskContract.Columns.TASKS_DESCRIPTION, "record content provider video")
         }
         val count = contentResolver.update(TaskContract.buildTaskUri(4), values, null, null)
-        Log.d("MainActivity", "onCreate: count = $count")
+        Log.d("MainActivity", "onCreate: count = $count record(s) update")*/
        /* values.run {
-            put(TaskContract.Columns.TASKS_NAME, "New Task 1")
-            put(TaskContract.Columns.TASKS_DESCRIPTION, "New Description 1")
+            put(TaskContract.Columns.TASKS_NAME, "New Task 3")
+            put(TaskContract.Columns.TASKS_DESCRIPTION, "New Description 3")
             put(TaskContract.Columns.TASK_SORTORDER, 2)
         }
-        val uri = contentResolver.insert(TaskContract.CONTENT_URI, values)
-*/
+        val uri = contentResolver.insert(TaskContract.CONTENT_URI, values)*/
         val cursor = contentResolver.query(TaskContract.CONTENT_URI,
                 projection,
                 null,
