@@ -3,4 +3,10 @@
     <string name="action_settings">Settings</string>
     <string name="menutitle_addTask">Add Task</string>
     <string name="menumain_showDu">Duration Report</string>
+    <string name="menumain_setting">Setting</string>
+    <string name="menumain_showab">About TaskTimer</string>
+    <string name="menumain_genreate">Generate Data</string>
+    <string name="no_task_message">No Task Selected</string>
+    <string name="edit_button_desc" />
+    <string name="delete_button_desc" />
 </resources>

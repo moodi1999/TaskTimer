@@ -15,14 +15,20 @@
         android:title="@string/menutitle_addTask"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/menumain_setting"
         android:orderInCategory="102"
-        android:title="@string/action_settings"
+        android:title="@string/menumain_setting"
         app:showAsAction="never" />
     <item
+        android:id="@+id/menumain_showabout"
+        android:icon="@android:drawable/ic_menu_info_details"
         android:orderInCategory="103"
-        android:title="Item" />
+        android:title="@string/menumain_showab"
+        app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menumain_generate"
         android:orderInCategory="104"
-        android:title="Item" />
+        android:title="@string/menumain_genreate"
+        android:visible="false"
+        app:showAsAction="never" />
 </menu>
