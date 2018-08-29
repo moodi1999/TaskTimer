@@ -99,6 +99,7 @@ class AddEditActivityFragment : Fragment() {
             Log.d("AddEditActivityFragment", "onCreateView: onclick : Done ei");
         }
 
+        Log.d("AddEditActivityFragment", "onCreateView: Exiting");
         return view
     }
 
