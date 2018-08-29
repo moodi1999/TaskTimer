@@ -9,7 +9,7 @@ class Task(
         var m_Id: Long,
         val mName: String,
         val mDescription: String,
-        val mSortOrder: String
+        val mSortOrder: Int
 ) : Serializable{
 
     companion object {
