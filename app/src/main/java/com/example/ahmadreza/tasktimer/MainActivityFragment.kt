@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.CursorLoader
 import android.support.v4.content.Loader
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +23,10 @@ class MainActivityFragment : Fragment() , LoaderManager.LoaderCallbacks<Cursor>{
         val LoaderId = 0
     }
 
+    internal var mAdaptor: CursorRecyclerViewAdaptor? = null
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        Log.d("MainActivityFragment", "onActivityCreated: created")
         super.onActivityCreated(savedInstanceState)
         loaderManager.initLoader(LoaderId, null, this)
     }
@@ -31,7 +36,7 @@ class MainActivityFragment : Fragment() , LoaderManager.LoaderCallbacks<Cursor>{
         val projection = arrayOf(TaskContract.Columns._ID, TaskContract.Columns.TASKS_NAME,
                 TaskContract.Columns.TASKS_DESCRIPTION, TaskContract.Columns.TASK_SORTORDER)
 
-        val sortOrder = TaskContract.Columns.TASK_SORTORDER + "," + TaskContract.Columns.TASKS_NAME
+        val sortOrder = TaskContract.Columns.TASK_SORTORDER + "," + TaskContract.Columns.TASKS_NAME + " COLLATE NOCASE"
 
         when (p0){
             LoaderId -> {
@@ -51,26 +56,26 @@ class MainActivityFragment : Fragment() , LoaderManager.LoaderCallbacks<Cursor>{
 
     override fun onLoadFinished(p0: Loader<Cursor>, p1: Cursor?) {
         Log.e("MainActivityFragment", "onLoadFinished :::: Start")
-        var count = -1
-
-        if (p1 != null){
-            while (p1.moveToNext()){
-                for (i in 0 until p1.columnCount){
-                    Log.d("MainActivityFragment", "onLoadFinished: ${p1.getColumnName(i)} : ${p1.getString(i)}")
-                }
-                Log.d("MainActivityFragment", "onLoadFinished: ===================")
-            }
-            count = p1.count
-        }
+        mAdaptor!!.swapCursor(p1!!)
+        var count = mAdaptor!!.itemCount
         Log.d("MainActivityFragment", "onLoadFinished: count is $count")
     }
 
     override fun onLoaderReset(p0: Loader<Cursor>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("MainActivityFragment", "onLoaderReset: start")
+        mAdaptor!!.swapCursor(null)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        val view = inflater.inflate(R.layout.fragment_main, container, false)
+        var recyclerView = view.findViewById<RecyclerView>(R.id.task_list)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        mAdaptor = CursorRecyclerViewAdaptor(null)
+        recyclerView.adapter = mAdaptor
+
+        Log.d("MainActivityFragment", "onCreateView: returning ")
+        return view
     }
 }

@@ -14,4 +14,6 @@
     <string name="addedit_sort_hint">Order: sort low to high</string>
     <string name="addedit_save_text">Save</string>
     <string name="title_activity_add_edit">AddEditActivity</string>
+    <string name="Instruction">AddEditActivity</string>
+    <string name="Instruction4">instruction2</string>
 </resources>

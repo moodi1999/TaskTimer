@@ -19,9 +19,8 @@ import android.util.Log
  */
 
 class AppProvider : ContentProvider() {
-
+    private val TAG = "AppProvider"
     private var mOpenHelper: AppDatabase? = null
-
     companion object {
         val CONTENT_AUTHORITY = "com.example.ahmadreza.tasktimer.provider"
         val CONTENT_AUTHORITY_URI = Uri.parse("content://$CONTENT_AUTHORITY")
@@ -68,7 +67,7 @@ class AppProvider : ContentProvider() {
 
         val db: SQLiteDatabase
         var returnUri: Uri? = null
-        var recordId: Long
+        var recordId: Long? = null
 
         when (match) {
             TASKS -> {
@@ -93,8 +92,14 @@ class AppProvider : ContentProvider() {
             else -> throw IllegalArgumentException("Unknown Uri $uri")
         }
 
+        if (recordId!! >= 0) {
+            // something was inserted
+            Log.d("AppProvider", "insert: Setting notifychanged with $uri")
+            context!!.contentResolver.notifyChange(uri!!, null)
+        } else {
+            Log.d("AppProvider", "insert: nothig insrted")
+        }
         Log.d("AppProvider", "Exiting insert, returning $returnUri")
-
         return returnUri!!
     }
 
@@ -134,7 +139,12 @@ class AppProvider : ContentProvider() {
         }
 
         val db = mOpenHelper?.readableDatabase
-        return queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
+        //return queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
+        var cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
+        Log.d("AppProvider", "query: row is returned cursor = ${cursor.count}")    // TODO: 8/30/18 Remove this line
+
+        cursor.setNotificationUri(context.contentResolver, uri)
+        return cursor
     }
 
     override fun onCreate(): Boolean {
@@ -146,7 +156,7 @@ class AppProvider : ContentProvider() {
         Log.d("AppProvider", "update: called with uri : $uri")
         val match = sUriMatcher.match(uri)
         println("match = ${match}")
-        var db: SQLiteDatabase? = null
+        var db: SQLiteDatabase?
         var count: Int
 
         var selectionCriteria: String
@@ -186,6 +196,14 @@ class AppProvider : ContentProvider() {
             else -> {
                 throw IllegalArgumentException("Unknown uri $uri")
             }
+        }
+
+        if (count > 0){
+            // something was deleted
+            Log.d(TAG, "update: setting notifyChange with $uri")
+            context.contentResolver.notifyChange(uri, null)
+        }else{
+            Log.d(TAG, "update: nothing deleted")
         }
 
         Log.d("AppProvider", "update() returned = ${count}")
@@ -239,6 +257,14 @@ class AppProvider : ContentProvider() {
             }
         }
 
+
+        if (count > 0){
+            // something was deleted 
+            Log.d(TAG, "delete: setting notifyChange with $uri")
+            context.contentResolver.notifyChange(uri, null)
+        }else{
+            Log.d(TAG, "delete: nothing deleted")
+        }
         Log.d("AppProvider", "update() returned = ${count}")
         return count
     }
