@@ -8,7 +8,9 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() , CursorRecyclerViewAdaptor.OnTaskClicklistener{
+
+    private val TAG = "MainActivity"
 
     /**
      * whether or not the activity is in 2 pane mode
@@ -67,5 +69,13 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    override fun onEditClick(task: Task) {
+        taskEditRequest(task)
+    }
+
+    override fun onDeleteClick(task: Task) {
+        contentResolver.delete(TaskContract.buildTaskUri(task.m_Id), null, null)
     }
 }

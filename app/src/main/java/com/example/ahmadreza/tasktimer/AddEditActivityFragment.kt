@@ -40,7 +40,7 @@ class AddEditActivityFragment : Fragment() {
                 Log.d("AddEditActivityFragment", "onCreateView: TAsk detail found edditing...");
                 edt_name.setText(task.mName)
                 edt_disc.setText(task.mDescription)
-                edt_sort.setText(task.mSortOrder)
+                edt_sort.setText(task.mSortOrder.toString())
                 mMode = FragmentEditMode.EDIT
             } else {
                 // NO Task, so we must be adding sa new task, and not editing an existing one

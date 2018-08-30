@@ -72,7 +72,8 @@ class MainActivityFragment : Fragment() , LoaderManager.LoaderCallbacks<Cursor>{
         var recyclerView = view.findViewById<RecyclerView>(R.id.task_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        mAdaptor = CursorRecyclerViewAdaptor(null)
+        val activ = activity as CursorRecyclerViewAdaptor.OnTaskClicklistener
+        mAdaptor = CursorRecyclerViewAdaptor(null, activ)
         recyclerView.adapter = mAdaptor
 
         Log.d("MainActivityFragment", "onCreateView: returning ")
