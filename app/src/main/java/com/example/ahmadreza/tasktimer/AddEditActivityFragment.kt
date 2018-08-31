@@ -1,6 +1,8 @@
 package com.example.ahmadreza.tasktimer
 
+import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -11,15 +13,40 @@ import com.example.ahmadreza.tasktimer.R.id.addedit_desc
 import com.example.ahmadreza.tasktimer.R.id.addedit_sortorder
 import kotlinx.android.synthetic.main.fragment_add_edit.*
 import kotlinx.android.synthetic.main.fragment_add_edit.view.*
+import java.io.Serializable
 
 /**
  * A placeholder fragment containing a simple view.
  */
 class AddEditActivityFragment : Fragment() {
+    private val TAG = "AddEditActivityFragment"
 
     enum class FragmentEditMode { EDIT, ADD }
 
     private var mMode: FragmentEditMode? = null
+
+    private var mSaveListener: OnSavedClicked? = null
+    interface OnSavedClicked{
+        fun onSaveClicked()
+    }
+
+    override fun onAttach(context: Context?) {
+        Log.e(TAG, "onAttach :::: Start")
+        super.onAttach(context)
+        // Activities containing
+        val acti = activity
+        if (acti !is OnSavedClicked) {
+            throw ClassCastException(acti!!.javaClass.simpleName + " \n it has to empelement OnSavedClicked interface")
+        }
+        mSaveListener = activity as OnSavedClicked
+    }
+
+    override fun onDetach() {
+        Log.e(TAG, "onDetach :::: Start")
+        super.onDetach()
+        mSaveListener = null
+
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -29,15 +56,16 @@ class AddEditActivityFragment : Fragment() {
         val edt_name = view.addedit_name
         val edt_disc = view.addedit_desc
 
-        val argument = activity!!.intent.extras // the line we'll change later
+        //val argument = activity!!.intent.extras // FIXME: 8/31/18 change this line to recive data from fragment too
+        val argument = arguments
 
         var task: Task? = null
         if (argument != null) {
             Log.d("AddEditActivityFragment", "onCreateView: retriening task detail");
-
-            task = argument.getSerializable(Task::class.java.simpleName) as Task
-            if (task != null) {
+            val serz: Serializable? = argument.getSerializable(Task::class.java.simpleName)
+            if (argument.getSerializable(Task::class.java.simpleName) != null) {
                 Log.d("AddEditActivityFragment", "onCreateView: TAsk detail found edditing...");
+                task = serz as Task
                 edt_name.setText(task.mName)
                 edt_disc.setText(task.mDescription)
                 edt_sort.setText(task.mSortOrder.toString())
@@ -97,6 +125,10 @@ class AddEditActivityFragment : Fragment() {
             }
 
             Log.d("AddEditActivityFragment", "onCreateView: onclick : Done ei");
+
+            if (mSaveListener != null) {
+                mSaveListener!!.onSaveClicked()
+            }
         }
 
         Log.d("AddEditActivityFragment", "onCreateView: Exiting");

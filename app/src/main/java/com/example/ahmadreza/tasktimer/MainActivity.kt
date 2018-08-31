@@ -2,13 +2,15 @@ package com.example.ahmadreza.tasktimer
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() , CursorRecyclerViewAdaptor.OnTaskClicklistener{
+class MainActivity : AppCompatActivity() , CursorRecyclerViewAdaptor.OnTaskClicklistener , AddEditActivityFragment.OnSavedClicked{
 
     private val TAG = "MainActivity"
 
@@ -28,6 +30,11 @@ class MainActivity : AppCompatActivity() , CursorRecyclerViewAdaptor.OnTaskClick
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        if (findViewById<FrameLayout>(R.id.task_detail_container) != null) {
+            // the datail conteiner view will be peresent only in large screen layouts (res/values-sw600dp).
+            // If this peresent, then activity shoulb be in two pane mode
+            mTwoPane = true
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -57,6 +64,15 @@ class MainActivity : AppCompatActivity() , CursorRecyclerViewAdaptor.OnTaskClick
         Log.d("MainActivity", "taskEditRequest: Start")
         if (mTwoPane) {
             Log.d("MainActivity", "taskEditRequest: in twopane mode")
+            val fragment = AddEditActivityFragment()
+
+            val arguments = Bundle()
+            arguments.putSerializable(Task::class.java.simpleName, task)
+            fragment.arguments = arguments
+
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.task_detail_container, fragment)
+                    .commit()
         } else {
             Log.d("MainActivity", "taskEditRequest: not twopane mode (phone)")
             val detailIntent = Intent(this, AddEditActivity::class.java)
@@ -77,5 +93,15 @@ class MainActivity : AppCompatActivity() , CursorRecyclerViewAdaptor.OnTaskClick
 
     override fun onDeleteClick(task: Task) {
         contentResolver.delete(TaskContract.buildTaskUri(task.m_Id), null, null)
+    }
+
+    override fun onSaveClicked() {
+        Log.e(TAG, "onSaveClicked :::: Start")
+        val fragment: Fragment? = supportFragmentManager.findFragmentById(R.id.task_detail_container)
+        if (fragment != null) {
+            supportFragmentManager.beginTransaction()
+                    .remove(fragment)
+                    .commit()
+        }
     }
 }
