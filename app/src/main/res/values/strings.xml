@@ -16,4 +16,17 @@
     <string name="title_activity_add_edit">AddEditActivity</string>
     <string name="Instruction">AddEditActivity</string>
     <string name="Instruction4">instruction2</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="deldiag_posetive_action">Delete</string>
+    <string name="deldialog_message">Deleting will also delete all timing data associated with task id %1$d : %2$s</string>
+    <string name="cancelEditDiag_message">You have unsvae changes want to save or want to contine edititng</string>
+    <string name="cancelEditDiag_positive_caption">Continue Editing</string>
+    <string name="cancelEditDiag_negative_message">Abandon changes</string>
+    <string name="about_copyright">Copyright © 2017 ahmadreza moodi</string>
+    <string name="about_weblink">Instruction available</string>
+    <string name="about_url"><u>www.ahmadrezamoodi.com</u></string>
+    <string name="about_weblink_21">Instruction available www.ahmadrezamoodi.com</string>
+    <string name="about_email">Email: moodi1378@gmail.com</string>
+    <string name="about_credits"> Icon Derived from <b> analog </b></string>
 </resources>

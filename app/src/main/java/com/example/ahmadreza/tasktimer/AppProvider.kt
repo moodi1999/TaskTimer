@@ -61,7 +61,7 @@ class AppProvider : ContentProvider() {
     }
 
     override fun insert(uri: Uri?, values: ContentValues?): Uri {
-        Log.d("AppProvider", "insert: called with uri = $uri")
+        Log.i("AppProvider", "insert: called with uri = $uri")
         val match = sUriMatcher.match(uri)
         println("match is = ${match}")
 
@@ -94,19 +94,19 @@ class AppProvider : ContentProvider() {
 
         if (recordId!! >= 0) {
             // something was inserted
-            Log.d("AppProvider", "insert: Setting notifychanged with $uri")
+            Log.i("AppProvider", "insert: Setting notifychanged with $uri")
             context!!.contentResolver.notifyChange(uri!!, null)
         } else {
-            Log.d("AppProvider", "insert: nothig insrted")
+            Log.i("AppProvider", "insert: nothig insrted")
         }
-        Log.d("AppProvider", "Exiting insert, returning $returnUri")
+        Log.i("AppProvider", "Exiting insert, returning $returnUri")
         return returnUri!!
     }
 
     override fun query(uri: Uri?, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
-        Log.d("AppProvider", "query: called with URI  $uri")
+        Log.i("AppProvider", "query: called with URI  $uri")
         val match = sUriMatcher.match(uri)
-        Log.d("AppProvider", "query: match is $match")
+        Log.i("AppProvider", "query: match is $match")
 
         val queryBuilder = SQLiteQueryBuilder()
 
@@ -141,7 +141,7 @@ class AppProvider : ContentProvider() {
         val db = mOpenHelper?.readableDatabase
         //return queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
         var cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
-        Log.d("AppProvider", "query: row is returned cursor = ${cursor.count}")    // TODO: 8/30/18 Remove this line
+        Log.i("AppProvider", "query: row is returned cursor = ${cursor.count}")    // TODO: 8/30/18 Remove this line
 
         cursor.setNotificationUri(context.contentResolver, uri)
         return cursor
@@ -153,7 +153,7 @@ class AppProvider : ContentProvider() {
     }
 
     override fun update(uri: Uri?, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
-        Log.d("AppProvider", "update: called with uri : $uri")
+        Log.i("AppProvider", "update: called with uri : $uri")
         val match = sUriMatcher.match(uri)
         println("match = ${match}")
         var db: SQLiteDatabase?
@@ -200,19 +200,19 @@ class AppProvider : ContentProvider() {
 
         if (count > 0){
             // something was deleted
-            Log.d(TAG, "update: setting notifyChange with $uri")
+            Log.i(TAG, "update: setting notifyChange with $uri")
             context.contentResolver.notifyChange(uri, null)
         }else{
-            Log.d(TAG, "update: nothing deleted")
+            Log.i(TAG, "update: nothing deleted")
         }
 
-        Log.d("AppProvider", "update() returned = ${count}")
+        Log.i("AppProvider", "update() returned = ${count}")
         return count
     }
 
     override fun delete(uri: Uri?, selection: String?, selectionArgs: Array<out String>?): Int {
 
-        Log.d("AppProvider", "Delete: called with uri : $uri")
+        Log.i("AppProvider", "Delete: called with uri : $uri")
         val match = sUriMatcher.match(uri)
         println("match = ${match}")
         var db: SQLiteDatabase? = null
@@ -260,21 +260,20 @@ class AppProvider : ContentProvider() {
 
         if (count > 0){
             // something was deleted 
-            Log.d(TAG, "delete: setting notifyChange with $uri")
+            Log.i(TAG, "delete: setting notifyChange with $uri")
             context.contentResolver.notifyChange(uri, null)
         }else{
-            Log.d(TAG, "delete: nothing deleted")
+            Log.i(TAG, "delete: nothing deleted")
         }
-        Log.d("AppProvider", "update() returned = ${count}")
+        Log.i("AppProvider", "update() returned = ${count}")
         return count
     }
 
 
     override fun getType(uri: Uri?): String {
-        Log.d("AppProvider", "query: called with URI  $uri")
+        Log.i("AppProvider", "query: called with URI  $uri")
         val match = sUriMatcher.match(uri)
-        Log.d("AppProvider", "query: match is $match")
-
+        Log.i("AppProvider", "query: match is $match")
         return when (match) {
 
             TASKS -> TaskContract.CONTENT_TYPE

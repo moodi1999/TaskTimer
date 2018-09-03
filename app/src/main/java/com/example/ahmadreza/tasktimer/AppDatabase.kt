@@ -28,7 +28,7 @@ class AppDatabase private constructor(context: Context) : SQLiteOpenHelper(conte
         fun getInstance(context: Context): AppDatabase {
             if (instance == null){
                 println("AppDatabase.getInstance create new instance")
-                Log.d("Appdatabade", "getInstance: start")
+                Log.i("Appdatabade", "getInstance: start")
                 instance = AppDatabase(context)
             }
 
@@ -39,7 +39,7 @@ class AppDatabase private constructor(context: Context) : SQLiteOpenHelper(conte
 
     override fun onCreate(db: SQLiteDatabase?) {
 
-        Log.d("AppDatabase", "onCreate: Start")
+        Log.i("AppDatabase", "onCreate: Start")
         var sSQL: String;
 //        sSQL = "CREATE TABLE Tasks (_id INTEGER PRIMARY KEY NOT NULL,  Name TEXT NOT NULL, Descriprion TEXT, SortOrder INTEGER, CategoryID INTEGER);"
 
@@ -50,7 +50,7 @@ class AppDatabase private constructor(context: Context) : SQLiteOpenHelper(conte
                 TaskContract.Columns.TASK_SORTORDER + " INTEGER);"
         println("AppDatabase. $sSQL")
         db!!.execSQL(sSQL)
-        Log.d("AppDatabase", "onCreate: End")
+        Log.i("AppDatabase", "onCreate: End")
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {

@@ -20,21 +20,21 @@ internal class CursorRecyclerViewAdaptor(var cursor: Cursor?, val mlistener: OnT
     }
 
     init {
-        Log.d("CursorRecyclerViewAdapt", "initt: ")
+        Log.i("CursorRecyclerViewAdapt", "initt: ")
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, i: Int): TaskViewHolder {
-//        Log.d("CursorRecyclerViewAdapt", "onCreateViewHolder: new view requested")
+//        Log.i("CursorRecyclerViewAdapt", "onCreateViewHolder: new view requested")
         val view = LayoutInflater.from(parent.context).inflate(R.layout.task_list_item, parent, false)
         return TaskViewHolder(view)
     }
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: TaskViewHolder, i: Int) {
-//        Log.e("CursorRecyclerViewAdapt", "onBindViewHolder :::: Start")
+        Log.i("CursorRecyclerViewAdapt", "onBindViewHolder :::: Start")
 
         if (cursor == null || cursor?.count == 0) {
-            Log.d("CursorRecyclerViewAdapt", "onBindViewHolder: providing instruction")
+            Log.i("CursorRecyclerViewAdapt", "onBindViewHolder: providing instruction")
             holder.name.text = "Instruction"
             holder.desc.text = "Use the add button (+) in the toolbar above to create new task + " +
                     "\n\n Tasks with lower sort orders woll be placed higher up the list"
@@ -55,7 +55,7 @@ internal class CursorRecyclerViewAdaptor(var cursor: Cursor?, val mlistener: OnT
             holder.deleteButton.visibility = View.VISIBLE
 
             val buttonListener = View.OnClickListener{cursor!!.getColumnIndex(TaskContract.Columns.TASKS_DESCRIPTION)
-//                Log.e(TAG, "onBindViewHolder :::: Start")
+//                Log.i(TAG, "onBindViewHolder :::: Start")
 
                 when(it.id){
                     R.id.tli_edit -> {
@@ -69,12 +69,12 @@ internal class CursorRecyclerViewAdaptor(var cursor: Cursor?, val mlistener: OnT
                         }
                     }
                     else ->{
-                        Log.d(TAG, "onBindViewHolder: onclick")
+                        Log.i(TAG, "onBindViewHolder: onclick")
                     }
                 }
 
-//                Log.d(TAG, "onBindViewHolder: button with id ${it.id} clicked")
-//                Log.d(TAG, "onBindViewHolder: task name is ${task.mName}")
+//                Log.i(TAG, "onBindViewHolder: button with id ${it.id} clicked")
+//                Log.i(TAG, "onBindViewHolder: task name is ${task.mName}")
             }
 
             holder.editButton.setOnClickListener(buttonListener)

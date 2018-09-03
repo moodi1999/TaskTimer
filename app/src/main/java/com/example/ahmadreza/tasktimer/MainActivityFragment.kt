@@ -26,13 +26,13 @@ class MainActivityFragment : Fragment() , LoaderManager.LoaderCallbacks<Cursor>{
     internal var mAdaptor: CursorRecyclerViewAdaptor? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
-        Log.d("MainActivityFragment", "onActivityCreated: created")
+        Log.i("MainActivityFragment", "onActivityCreated: created")
         super.onActivityCreated(savedInstanceState)
         loaderManager.initLoader(LoaderId, null, this)
     }
 
     override fun onCreateLoader(p0: Int, p1: Bundle?): Loader<Cursor> {
-        Log.d("MainActivityFragment", "onCreateLoader: id = $id")
+        Log.i("MainActivityFragment", "onCreateLoader: id = $id")
         val projection = arrayOf(TaskContract.Columns._ID, TaskContract.Columns.TASKS_NAME,
                 TaskContract.Columns.TASKS_DESCRIPTION, TaskContract.Columns.TASK_SORTORDER)
 
@@ -55,14 +55,14 @@ class MainActivityFragment : Fragment() , LoaderManager.LoaderCallbacks<Cursor>{
     }
 
     override fun onLoadFinished(p0: Loader<Cursor>, p1: Cursor?) {
-        Log.e("MainActivityFragment", "onLoadFinished :::: Start")
+        Log.i("MainActivityFragment", "onLoadFinished :::: Start")
         mAdaptor!!.swapCursor(p1!!)
         var count = mAdaptor!!.itemCount
-        Log.d("MainActivityFragment", "onLoadFinished: count is $count")
+        Log.i("MainActivityFragment", "onLoadFinished: count is $count")
     }
 
     override fun onLoaderReset(p0: Loader<Cursor>) {
-        Log.d("MainActivityFragment", "onLoaderReset: start")
+        Log.i("MainActivityFragment", "onLoaderReset: start")
         mAdaptor!!.swapCursor(null)
     }
 
@@ -76,7 +76,7 @@ class MainActivityFragment : Fragment() , LoaderManager.LoaderCallbacks<Cursor>{
         mAdaptor = CursorRecyclerViewAdaptor(null, activ)
         recyclerView.adapter = mAdaptor
 
-        Log.d("MainActivityFragment", "onCreateView: returning ")
+        Log.i("MainActivityFragment", "onCreateView: returning ")
         return view
     }
 }

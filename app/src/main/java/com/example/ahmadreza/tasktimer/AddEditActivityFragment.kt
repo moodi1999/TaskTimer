@@ -31,7 +31,7 @@ class AddEditActivityFragment : Fragment() {
     }
 
     override fun onAttach(context: Context?) {
-        Log.e(TAG, "onAttach :::: Start")
+        Log.i(TAG, "onAttach :::: Start")
         super.onAttach(context)
         // Activities containing
         val acti = activity
@@ -42,7 +42,7 @@ class AddEditActivityFragment : Fragment() {
     }
 
     override fun onDetach() {
-        Log.e(TAG, "onDetach :::: Start")
+        Log.i(TAG, "onDetach :::: Start")
         super.onDetach()
         mSaveListener = null
 
@@ -50,7 +50,7 @@ class AddEditActivityFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        Log.d("AddEditActivityFragment", "onCreateView: Start")
+        Log.i("AddEditActivityFragment", "onCreateView: Start")
         val view = inflater.inflate(R.layout.fragment_add_edit, container, false)
         val edt_sort = view.addedit_sortorder
         val edt_name = view.addedit_name
@@ -61,10 +61,10 @@ class AddEditActivityFragment : Fragment() {
 
         var task: Task? = null
         if (argument != null) {
-            Log.d("AddEditActivityFragment", "onCreateView: retriening task detail");
+            Log.i("AddEditActivityFragment", "onCreateView: retriening task detail");
             val serz: Serializable? = argument.getSerializable(Task::class.java.simpleName)
             if (argument.getSerializable(Task::class.java.simpleName) != null) {
-                Log.d("AddEditActivityFragment", "onCreateView: TAsk detail found edditing...");
+                Log.i("AddEditActivityFragment", "onCreateView: TAsk detail found edditing...");
                 task = serz as Task
                 edt_name.setText(task.mName)
                 edt_disc.setText(task.mDescription)
@@ -76,7 +76,7 @@ class AddEditActivityFragment : Fragment() {
             }
         } else {
             task = null
-            Log.d("AddEditActivityFragment", "onCreateView: No Arguments, adding new record");
+            Log.i("AddEditActivityFragment", "onCreateView: No Arguments, adding new record");
             mMode = FragmentEditMode.ADD
         }
        
@@ -106,14 +106,14 @@ class AddEditActivityFragment : Fragment() {
                         values.put(TaskContract.Columns.TASK_SORTORDER, so)
                     }
                     if (values.size() != 0) {
-                        Log.d("AddEditActivityFragment", "onCreateView: Updating task ");
+                        Log.i("AddEditActivityFragment", "onCreateView: Updating task ");
                         contentres.update(TaskContract.buildTaskUri(task!!.m_Id), values, null, null)
                     }
                 }
 
                 FragmentEditMode.ADD -> {
                     if (edt_name.length() > 0) {
-                        Log.d("AddEditActivityFragment", "onCreateView: adding new task");
+                        Log.i("AddEditActivityFragment", "onCreateView: adding new task");
                         values.run {
                             put(TaskContract.Columns.TASKS_NAME, edt_name.text!!.toString())
                             put(TaskContract.Columns.TASKS_DESCRIPTION, edt_disc.text!!.toString())
@@ -124,16 +124,19 @@ class AddEditActivityFragment : Fragment() {
                 }
             }
 
-            Log.d("AddEditActivityFragment", "onCreateView: onclick : Done ei");
+            Log.i("AddEditActivityFragment", "onCreateView: onclick : Done ei");
 
             if (mSaveListener != null) {
                 mSaveListener!!.onSaveClicked()
             }
         }
 
-        Log.d("AddEditActivityFragment", "onCreateView: Exiting");
+        Log.i("AddEditActivityFragment", "onCreateView: Exiting");
         return view
     }
 
+    fun canClose(): Boolean { // FIXME: 9/1/18
+        return false
+    }
 
 }
