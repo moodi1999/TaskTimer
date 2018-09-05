@@ -104,47 +104,51 @@ class AppProvider : ContentProvider() {
     }
 
     override fun query(uri: Uri?, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
-        Log.i("AppProvider", "query: called with URI  $uri")
-        val match = sUriMatcher.match(uri)
-        Log.i("AppProvider", "query: match is $match")
+        try {
+            Log.i("AppProvider", "query: called with URI  $uri")
+            val match = sUriMatcher.match(uri)
+            Log.i("AppProvider", "query: match is $match")
 
-        val queryBuilder = SQLiteQueryBuilder()
+            val queryBuilder = SQLiteQueryBuilder()
 
-        when (match) {
-            TASKS -> queryBuilder.tables = TaskContract.TABLE_NAME
+            when (match) {
+                TASKS -> queryBuilder.tables = TaskContract.TABLE_NAME
 
-            TASKS_ID -> {
-                queryBuilder.tables = TaskContract.TABLE_NAME
-                val taskId = TaskContract.getTaskId(uri!!)
-                queryBuilder.appendWhere(TaskContract.Columns._ID + " = " + taskId)
+                TASKS_ID -> {
+                    queryBuilder.tables = TaskContract.TABLE_NAME
+                    val taskId = TaskContract.getTaskId(uri!!)
+                    queryBuilder.appendWhere(TaskContract.Columns._ID + " = " + taskId)
+                }
+
+            /*     TIMINGS -> queryBuilder.tables = TimingsContrract.TABLE_NAME
+                 TIMINGs_ID -> {
+                     queryBuilder.tables = TimingsContrract.TABLE_NAME
+                     val timingId = TimingsContrract.getTimingId(uri)
+                     queryBuilder.appendWhere(TimingsContrract.Columns._ID + " = " + timingId)
+                 }
+
+                 TASKS_DUARITION -> queryBuilder.tables = DuaritionContract.TABLE_NAME
+                 TASKS_DUARITION_ID -> {
+                     queryBuilder.tables = DuaritionContract.TABLE_NAME
+                     val duaritionId = DuaritionContract.getDuaritionId(uri)
+                     queryBuilder.appendWhere(DuaritionContract.Columns._ID + " = " + duaritionId)
+                 }*/
+
+                else -> {
+                    throw IllegalArgumentException("Unknown URI: " + uri)
+                }
             }
 
-        /*     TIMINGS -> queryBuilder.tables = TimingsContrract.TABLE_NAME
-             TIMINGs_ID -> {
-                 queryBuilder.tables = TimingsContrract.TABLE_NAME
-                 val timingId = TimingsContrract.getTimingId(uri)
-                 queryBuilder.appendWhere(TimingsContrract.Columns._ID + " = " + timingId)
-             }
+            val db = mOpenHelper?.readableDatabase
+            //return queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
+            var cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
+            Log.i("AppProvider", "query: row is returned cursor = ${cursor.count}")    // TODO: 8/30/18 Remove this line
 
-             TASKS_DUARITION -> queryBuilder.tables = DuaritionContract.TABLE_NAME
-             TASKS_DUARITION_ID -> {
-                 queryBuilder.tables = DuaritionContract.TABLE_NAME
-                 val duaritionId = DuaritionContract.getDuaritionId(uri)
-                 queryBuilder.appendWhere(DuaritionContract.Columns._ID + " = " + duaritionId)
-             }*/
-
-            else -> {
-                throw IllegalArgumentException("Unknown URI: " + uri)
-            }
+            cursor.setNotificationUri(context.contentResolver, uri)
+            return cursor
+        }catch (e: Exception){
+            return null
         }
-
-        val db = mOpenHelper?.readableDatabase
-        //return queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
-        var cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
-        Log.i("AppProvider", "query: row is returned cursor = ${cursor.count}")    // TODO: 8/30/18 Remove this line
-
-        cursor.setNotificationUri(context.contentResolver, uri)
-        return cursor
     }
 
     override fun onCreate(): Boolean {
@@ -172,7 +176,7 @@ class AppProvider : ContentProvider() {
                 var taskId = TaskContract.getTaskId(uri!!)
                 selectionCriteria = TaskContract.Columns._ID + " = " + taskId
                 if (selection != null && selection.isNotEmpty()) {
-                    selectionCriteria += " AND (" + selection + ")"
+                    selectionCriteria += " AND ($selection)"
                 }
                 count = db!!.update(TaskContract.TABLE_NAME, values, selectionCriteria, selectionArgs)
             }
@@ -268,7 +272,6 @@ class AppProvider : ContentProvider() {
         Log.i("AppProvider", "update() returned = ${count}")
         return count
     }
-
 
     override fun getType(uri: Uri?): String {
         Log.i("AppProvider", "query: called with URI  $uri")
