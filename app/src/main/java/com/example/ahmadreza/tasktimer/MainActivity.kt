@@ -2,6 +2,7 @@ package com.example.ahmadreza.tasktimer
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -10,6 +11,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -44,10 +46,39 @@ class MainActivity : AppCompatActivity()
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        if (findViewById<FrameLayout>(R.id.task_detail_container) != null) {
+    /*    if (findViewById<FrameLayout>(R.id.task_detail_container) != null) {
             // the datail conteiner view will be peresent only in large screen layouts (res/values-sw600dp).
             // If this peresent, then activity shoulb be in two pane mode
             mTwoPane = true
+        }*/
+
+        //mTwoPane = (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        mTwoPane = false
+        Log.i(TAG, "onCreate: TwoPane is $mTwoPane ")
+
+        val manager = supportFragmentManager
+        //If the AddeditActivity fragment exist , we are editing
+        val editing = fragmentManager.findFragmentById(R.id.task_detail_container) != null
+        Log.i(TAG, "onCreate: editing is $editing")
+
+        // we need references to the contaners m so we can show or hide them as necessary
+        // no need to cast them as we'r only calling a method that's available for all views
+        val addEditLayout = findViewById<View>(R.id.task_detail_container)
+        val main = findViewById<View>(R.id.fragment)
+
+        if (mTwoPane) {
+            Log.i(TAG, "onCreate: twoPane mode")
+            main.visibility = View.VISIBLE
+            addEditLayout.visibility = View.VISIBLE
+        }else if (editing){
+            Log.i(TAG, "onCreate: single pane editing ")
+            //hide the left hand fragment , to make room for editing
+            main.visibility = View.GONE
+        }else{
+            Log.i(TAG, "onCreate: not editing")
+            //show left hand fragment
+            main.visibility = View.VISIBLE
+            addEditLayout.visibility = View.GONE
         }
     }
 
@@ -84,7 +115,6 @@ class MainActivity : AppCompatActivity()
         builder.setIcon(R.mipmap.ic_launcher)
         builder.setView(messageView)
         builder.setPositiveButton(R.string.ok) { dialog, which ->
-            //Log.i(TAG, "showAboutDialog: enteering meessage view.click showing = ${mDialog?.isShowing}")
             if (mDialog != null && mDialog!!.isShowing) {
                 mDialog?.dismiss()
             }
@@ -114,8 +144,7 @@ class MainActivity : AppCompatActivity()
 
     private fun taskEditRequest(task: Task?) {
         Log.i("MainActivity", "taskEditRequest: Start")
-        if (mTwoPane) {
-            Log.i("MainActivity", "taskEditRequest: in twopane mode")
+            Log.i("MainActivity", "taskEditRequest: in wopane mode")
             val fragment = AddEditActivityFragment()
 
             val arguments = Bundle()
@@ -125,18 +154,15 @@ class MainActivity : AppCompatActivity()
             supportFragmentManager.beginTransaction()
                     .replace(R.id.task_detail_container, fragment)
                     .commit()
-        } else {
+        if (!mTwoPane) {
             Log.i("MainActivity", "taskEditRequest: not twopane mode (phone)")
-            val detailIntent = Intent(this, AddEditActivity::class.java)
-            if (task != null) {
-                detailIntent.putExtra(Task::class.java.simpleName, task)
-                startActivity(detailIntent)
-            }else{
-                // adding a new task
-                startActivity(detailIntent)
-            }
-
+            //hide the left hand fragment
+            val addEditLayout = findViewById<View>(R.id.task_detail_container)
+            val main = findViewById<View>(R.id.fragment)
+            main.visibility = View.GONE
+            addEditLayout.visibility = View.VISIBLE
         }
+        Log.i(TAG, "taskEditRequest :::: FINISHED")
     }
 
     override fun onEditClick(task: Task) {
@@ -163,6 +189,13 @@ class MainActivity : AppCompatActivity()
             supportFragmentManager.beginTransaction()
                     .remove(fragment)
                     .commit()
+        }
+        val addEditLayout = findViewById<View>(R.id.task_detail_container)
+        val main = findViewById<View>(R.id.fragment)
+        if (!mTwoPane){
+            //we've just removed the editing fragment so hide the frame
+            addEditLayout.visibility = View.GONE
+            main.visibility = View.VISIBLE
         }
     }
 
