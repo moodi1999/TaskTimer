@@ -164,7 +164,6 @@ class MainActivity : AppCompatActivity()
                     .remove(fragment)
                     .commit()
         }
-
     }
 
     override fun onPositiveDialogResult(dialogId: Int, args: Bundle) {
