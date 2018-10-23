@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity()
         , AppDialog.DialogEvents
 {
 
+    private enum class methodCall {SAVE, EDIT, OnCREATE}
     private val TAG = "MainActivity"
 
     /**
@@ -52,34 +53,14 @@ class MainActivity : AppCompatActivity()
             mTwoPane = true
         }*/
 
-        //mTwoPane = (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-        mTwoPane = false
+        mTwoPane = (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+
         Log.i(TAG, "onCreate: TwoPane is $mTwoPane ")
 
-        val manager = supportFragmentManager
-        //If the AddeditActivity fragment exist , we are editing
-        val editing = fragmentManager.findFragmentById(R.id.task_detail_container) != null
-        Log.i(TAG, "onCreate: editing is $editing")
-
+        checkTwoPane(methodCall.OnCREATE)
         // we need references to the contaners m so we can show or hide them as necessary
         // no need to cast them as we'r only calling a method that's available for all views
-        val addEditLayout = findViewById<View>(R.id.task_detail_container)
-        val main = findViewById<View>(R.id.fragment)
 
-        if (mTwoPane) {
-            Log.i(TAG, "onCreate: twoPane mode")
-            main.visibility = View.VISIBLE
-            addEditLayout.visibility = View.VISIBLE
-        }else if (editing){
-            Log.i(TAG, "onCreate: single pane editing ")
-            //hide the left hand fragment , to make room for editing
-            main.visibility = View.GONE
-        }else{
-            Log.i(TAG, "onCreate: not editing")
-            //show left hand fragment
-            main.visibility = View.VISIBLE
-            addEditLayout.visibility = View.GONE
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -154,14 +135,7 @@ class MainActivity : AppCompatActivity()
             supportFragmentManager.beginTransaction()
                     .replace(R.id.task_detail_container, fragment)
                     .commit()
-        if (!mTwoPane) {
-            Log.i("MainActivity", "taskEditRequest: not twopane mode (phone)")
-            //hide the left hand fragment
-            val addEditLayout = findViewById<View>(R.id.task_detail_container)
-            val main = findViewById<View>(R.id.fragment)
-            main.visibility = View.GONE
-            addEditLayout.visibility = View.VISIBLE
-        }
+        checkTwoPane(methodCall.EDIT)
         Log.i(TAG, "taskEditRequest :::: FINISHED")
     }
 
@@ -190,13 +164,7 @@ class MainActivity : AppCompatActivity()
                     .remove(fragment)
                     .commit()
         }
-        val addEditLayout = findViewById<View>(R.id.task_detail_container)
-        val main = findViewById<View>(R.id.fragment)
-        if (!mTwoPane){
-            //we've just removed the editing fragment so hide the frame
-            addEditLayout.visibility = View.GONE
-            main.visibility = View.VISIBLE
-        }
+
     }
 
     override fun onPositiveDialogResult(dialogId: Int, args: Bundle) {
@@ -264,6 +232,51 @@ class MainActivity : AppCompatActivity()
     override fun onAttachFragment(fragment: android.app.Fragment?) {
         Log.i(TAG, "onAttachFragment: called fragment")
         super.onAttachFragment(fragment)
+    }
+
+    private fun checkTwoPane(method: methodCall){
+        val addEditLayout = findViewById<View>(R.id.task_detail_container)
+        val main = findViewById<View>(R.id.fragment2)
+        when(method){
+            methodCall.OnCREATE -> {
+                val manager = supportFragmentManager
+                //If the AddeditActivity fragment exist , we are editing
+                val editing = manager.findFragmentById(R.id.task_detail_container) != null
+                Log.i(TAG, "onCreate: editing is $editing")
+
+                if (mTwoPane) {
+                    Log.i(TAG, "onCreate: twoPane mode")
+                    main.visibility = View.VISIBLE
+                    addEditLayout.visibility = View.VISIBLE
+                }else if (editing){
+                    Log.i(TAG, "onCreate: single pane editing ")
+                    //hide the left hand fragment , to make room for editing
+                    main.visibility = View.GONE
+                }else{
+                    Log.i(TAG, "onCreate: not editing")
+                    //show left hand fragment
+                    main.visibility = View.VISIBLE
+                    addEditLayout.visibility = View.GONE
+                }
+            }
+
+            methodCall.EDIT -> {
+                if (!mTwoPane) {
+                    Log.i("MainActivity", "taskEditRequest: not twopane mode (phone)")
+                    //hide the left hand fragment
+                    main.visibility = View.GONE
+                    addEditLayout.visibility = View.VISIBLE
+                }
+            }
+
+            methodCall.SAVE -> {
+                if (!mTwoPane){
+                    //we've just removed the editing fragment so hide the frame
+                    addEditLayout.visibility = View.GONE
+                    main.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
 }
