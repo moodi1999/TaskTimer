@@ -37,7 +37,7 @@ internal class CursorRecyclerViewAdaptor(var cursor: Cursor?, val mlistener: OnT
             Log.i("CursorRecyclerViewAdapt", "onBindViewHolder: providing instruction")
             holder.name.text = "Instruction"
             holder.desc.text = "Use the add button (+) in the toolbar above to create new task + " +
-                    "\n\n Tasks with lower sort orders woll be placed higher up the list"
+                    "\n\n Tasks with lower sort orders will be placed higher up the list"
             holder.editButton.visibility = View.GONE
             holder.deleteButton.visibility = View.GONE
         } else {
@@ -54,7 +54,7 @@ internal class CursorRecyclerViewAdaptor(var cursor: Cursor?, val mlistener: OnT
             holder.editButton.visibility = View.VISIBLE
             holder.deleteButton.visibility = View.VISIBLE
 
-            val buttonListener = View.OnClickListener{cursor!!.getColumnIndex(TaskContract.Columns.TASKS_DESCRIPTION)
+            val buttonListener = View.OnClickListener{
 //                Log.i(TAG, "onBindViewHolder :::: Start")
 
                 when(it.id){

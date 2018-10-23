@@ -25,7 +25,6 @@ class AppProvider : ContentProvider() {
         val CONTENT_AUTHORITY = "com.example.ahmadreza.tasktimer.provider"
         val CONTENT_AUTHORITY_URI = Uri.parse("content://$CONTENT_AUTHORITY")
         val sUriMatcher = buildUriMatcher()
-
         private val TASKS = 100
         private val TASKS_ID = 101
 

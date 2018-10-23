@@ -216,7 +216,6 @@ class MainActivity : AppCompatActivity()
                 putInt(AppDialog.DIALOG_POSITIVE_RID, R.string.cancelEditDiag_positive_caption)
                 putInt(AppDialog.DIALOG_NEGATIVE_RID, R.string.cancelEditDiag_negative_message)
             }
-
             dialog.arguments = args
             dialog.show(fragmentManager, null)
         }
@@ -227,6 +226,11 @@ class MainActivity : AppCompatActivity()
         if (mDialog != null && mDialog!!.isShowing) {
             mDialog?.dismiss()
         }
+    }
+
+    override fun onAttachFragment(fragment: android.app.Fragment?) {
+        Log.i(TAG, "onAttachFragment: called fragment")
+        super.onAttachFragment(fragment)
     }
 
 }

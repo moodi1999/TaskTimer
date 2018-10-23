@@ -50,6 +50,7 @@ class MainActivityFragment : Fragment() , LoaderManager.LoaderCallbacks<Cursor>{
 
             else -> {
                 throw InvalidParameterException("MainActivity oncreateLoader called with invalid loader id $p0")
+
             }
         }
     }
@@ -69,7 +70,7 @@ class MainActivityFragment : Fragment() , LoaderManager.LoaderCallbacks<Cursor>{
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
-        var recyclerView = view.findViewById<RecyclerView>(R.id.task_list)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.task_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         val activ = activity as CursorRecyclerViewAdaptor.OnTaskClicklistener

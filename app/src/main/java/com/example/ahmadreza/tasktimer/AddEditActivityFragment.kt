@@ -118,7 +118,7 @@ class AddEditActivityFragment : Fragment() {
                             put(TaskContract.Columns.TASKS_NAME, edt_name.text!!.toString())
                             put(TaskContract.Columns.TASKS_DESCRIPTION, edt_disc.text!!.toString())
                             put(TaskContract.Columns.TASK_SORTORDER, so)
-                            contentres.insert(TaskContract.CONTENT_URI, values)
+                            contentres.insert(TaskContract.CONTENT_URI, this)
                         }
                     }
                 }

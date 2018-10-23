@@ -23,15 +23,19 @@ class AddEditActivity : AppCompatActivity(), AddEditActivityFragment.OnSavedClic
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
-        val fragment = AddEditActivityFragment()
-
-        val args = intent.extras
-        fragment.arguments = args
-
+        if (savedInstanceState == null){
         val manager = supportFragmentManager
-        val transaction = manager.beginTransaction()
-        transaction.replace(R.id.fragment, fragment)
-        transaction.commit()
+//        if (manager.findFragmentById(R.id.fragment) == null){
+
+            val fragment = AddEditActivityFragment()
+
+            val args = intent.extras
+            fragment.arguments = args
+
+            val transaction = manager.beginTransaction()
+            transaction.replace(R.id.fragment, fragment)
+            transaction.commit()
+        }
     }
 
     override fun onSaveClicked() {
