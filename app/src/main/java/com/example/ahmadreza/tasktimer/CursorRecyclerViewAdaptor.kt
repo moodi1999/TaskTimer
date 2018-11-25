@@ -2,6 +2,7 @@ package com.example.ahmadreza.tasktimer
 
 import android.annotation.SuppressLint
 import android.database.Cursor
+import android.support.annotation.NonNull
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
@@ -14,9 +15,10 @@ internal class CursorRecyclerViewAdaptor(var cursor: Cursor?, val mlistener: OnT
 
     private val TAG = "CursorRecyclerViewAd"
 
-    interface OnTaskClicklistener{
-        fun onEditClick(task: Task)
-        fun onDeleteClick(task: Task)
+    interface OnTaskClicklistener {
+        fun onEditClick(@NonNull task: Task)
+        fun onDeleteClick(@NonNull task: Task)
+        fun onTaskLongClick(@NonNull task: Task)
     }
 
     init {
@@ -24,7 +26,6 @@ internal class CursorRecyclerViewAdaptor(var cursor: Cursor?, val mlistener: OnT
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, i: Int): TaskViewHolder {
-//        Log.i("CursorRecyclerViewAdapt", "onCreateViewHolder: new view requested")
         val view = LayoutInflater.from(parent.context).inflate(R.layout.task_list_item, parent, false)
         return TaskViewHolder(view)
     }
@@ -54,27 +55,34 @@ internal class CursorRecyclerViewAdaptor(var cursor: Cursor?, val mlistener: OnT
             holder.editButton.visibility = View.VISIBLE
             holder.deleteButton.visibility = View.VISIBLE
 
-            val buttonListener = View.OnClickListener{
-//                Log.i(TAG, "onBindViewHolder :::: Start")
+            val buttonListener = View.OnClickListener {
+                //                Log.i(TAG, "onBindViewHolder :::: Start")
 
-                when(it.id){
+                when (it.id) {
                     R.id.tli_edit -> {
-                        if (mlistener != null){
+                        if (mlistener != null) {
                             mlistener.onEditClick(task)
                         }
                     }
-                    R.id.tli_delete ->{
-                        if (mlistener != null){
+                    R.id.tli_delete -> {
+                        if (mlistener != null) {
                             mlistener.onDeleteClick(task)
                         }
                     }
-                    else ->{
+                    else -> {
                         Log.i(TAG, "onBindViewHolder: onclick")
                     }
                 }
 
-//                Log.i(TAG, "onBindViewHolder: button with id ${it.id} clicked")
-//                Log.i(TAG, "onBindViewHolder: task name is ${task.mName}")
+            }
+
+            holder.itemV.setOnLongClickListener {
+                Log.i(TAG, "onBindViewHolder: onLong click start")
+                if (mlistener != null) {
+                    mlistener.onTaskLongClick(task)
+                    true
+                }
+                false
             }
 
             holder.editButton.setOnClickListener(buttonListener)
@@ -90,7 +98,7 @@ internal class CursorRecyclerViewAdaptor(var cursor: Cursor?, val mlistener: OnT
      * swap in new Cursor , returning the cursor
      * the returnd old cursor is <em>not</em> close
      *
-     * @param cursor the new cursor to be used
+     * @param [Cursour] the new cursor to be used
      * @return Rturns the perviesly set Cursor , or null if there wasn't one.
      * If the givdm new Cursor is same instance as the previously set
      * Cursor, null is also returned.
@@ -114,10 +122,10 @@ internal class CursorRecyclerViewAdaptor(var cursor: Cursor?, val mlistener: OnT
     }
 
     internal class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val name = itemView.tli_name
-        val desc = itemView.tli_disceription
-        val editButton = itemView.tli_edit
-        val deleteButton = itemView.tli_delete
+        val name = itemView.tli_name!!
+        val desc = itemView.tli_disceription!!
+        val editButton = itemView.tli_edit!!
+        val deleteButton = itemView.tli_delete!!
+        val itemV = itemView
     }
-
 }

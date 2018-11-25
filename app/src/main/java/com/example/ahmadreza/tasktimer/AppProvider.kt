@@ -48,9 +48,9 @@ class AppProvider : ContentProvider() {
                 // eg . content://com.example.ahmadreza.tasktimer.provider/Tasks/8
                 addURI(CONTENT_AUTHORITY, TaskContract.TABLE_NAME + "/#", TASKS_ID)
 
-//                addURI(CONTENT_AUTHORITY, TimingsContrract.TABLE_NAME, TIMINGS)
-//                addURI(CONTENT_AUTHORITY, TimingsContrract.TABLE_NAME + "/#", TIMINGs_ID)
-//
+                addURI(CONTENT_AUTHORITY, TimingsContract.TABLE_NAME, TIMINGS)
+                addURI(CONTENT_AUTHORITY, TimingsContract.TABLE_NAME + "/#", TIMINGs_ID)
+
 //                addURI(CONTENT_AUTHORITY, DuaritionContract.TABLE_NAME, TASKS_DUARITION)
 //                addURI(CONTENT_AUTHORITY, DuaritionContract.TABLE_NAME + "/#", TASKS_DUARITION_ID)
             }
@@ -119,13 +119,13 @@ class AppProvider : ContentProvider() {
                     queryBuilder.appendWhere(TaskContract.Columns._ID + " = " + taskId)
                 }
 
-            /*     TIMINGS -> queryBuilder.tables = TimingsContrract.TABLE_NAME
+                TIMINGS -> queryBuilder.tables = TimingsContract.TABLE_NAME
                  TIMINGs_ID -> {
-                     queryBuilder.tables = TimingsContrract.TABLE_NAME
-                     val timingId = TimingsContrract.getTimingId(uri)
-                     queryBuilder.appendWhere(TimingsContrract.Columns._ID + " = " + timingId)
+                     queryBuilder.tables = TimingsContract.TABLE_NAME
+                     val timingId = TimingsContract.getTimingId(uri!!)
+                     queryBuilder.appendWhere(TimingsContract.Columns._ID + " = " + timingId)
                  }
-
+/*
                  TASKS_DUARITION -> queryBuilder.tables = DuaritionContract.TABLE_NAME
                  TASKS_DUARITION_ID -> {
                      queryBuilder.tables = DuaritionContract.TABLE_NAME

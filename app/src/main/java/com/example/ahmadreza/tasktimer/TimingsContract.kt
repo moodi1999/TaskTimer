@@ -9,31 +9,33 @@ import com.example.ahmadreza.tasktimer.AppProvider.Companion.CONTENT_AUTHORITY_U
 /**
  * Created by ahmadreza on 8/23/18.
  */
-class TaskContract {
+class TimingsContract {
 
     companion object {
-        val TABLE_NAME = "Tasks"
+        val TABLE_NAME = "Timings"
 
         /**
-         * The URI to Access the Tasks table
+         * The URI to Access the Timings table
          * */
-        public val CONTENT_URI = Uri.withAppendedPath(CONTENT_AUTHORITY_URI, TABLE_NAME)
+        val CONTENT_URI = Uri.withAppendedPath(CONTENT_AUTHORITY_URI, TABLE_NAME)
         val CONTENT_TYPE = "van.android.cursor.dir/vnd$CONTENT_AUTHORITY.$TABLE_NAME"
         val CONTENT_ITEM_TYPE = "van.android.cursor.item/vnd$CONTENT_AUTHORITY.$TABLE_NAME"
 
-        public fun buildTaskUri(taskId: Long): Uri{
-            return ContentUris.withAppendedId(CONTENT_URI, taskId)
+
+        public fun buildTimingUri(TimingId: Long): Uri{
+            val app = ContentUris.withAppendedId(CONTENT_URI, TimingId)
+            return app
         }
 
-        public fun getTaskId(uri: Uri): Long {
+        public fun getTimingId(uri: Uri): Long {
             return ContentUris.parseId(uri)
         }
     }
 
     object Columns {
         val _ID = BaseColumns._ID
-        val TASKS_NAME = "Name"
-        val TASKS_DESCRIPTION = "Description"
-        val TASK_SORTORDER = "SortOrder"
+        val TIMINGS_TASK_ID = "TaskId"
+        val TIMINGS_START_TIME = "StartTime"
+        val TIMINGS_DURATION = "Duration"
     }
 }

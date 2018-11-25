@@ -16,6 +16,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_main.*
 import java.net.URL
 
 class MainActivity : AppCompatActivity()
@@ -40,6 +41,8 @@ class MainActivity : AppCompatActivity()
 
     private var mDialog: AlertDialog? = null // moudle scope because we need to dismiss it in onStop
     // e.g when orientation changes to avoid memory leaks
+
+    private var mCurrentTiming: Timing? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i("MainActivity", "onCreate: Start")
@@ -164,6 +167,28 @@ class MainActivity : AppCompatActivity()
 
         dialog.arguments = args
         dialog.show(fragmentManager, null)
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onTaskLongClick(task: Task) {
+        Log.i(TAG, "onTaskLongClick: onTask Long clicked")
+        if (mCurrentTiming != null) {
+            if (task.m_Id == mCurrentTiming!!.mTask.m_Id) {
+                // the current task was tapped a second time, so stop timing
+                // TODO: 11/25/18 saveTiming(mcurrentTiming)
+                mCurrentTiming = null
+                current_task.text = getString(R.string.no_task_message)
+            } else {
+                // a new task is being timed, so stop the old one first
+                // TODO: 11/25/18 saveTiming(mCurrentTiming)
+                mCurrentTiming = Timing(task)
+                current_task.text = "Timing ${mCurrentTiming!!.mTask.mName}"
+            }
+        } else {
+            // no task being time start timing the new task
+            mCurrentTiming = Timing(task)
+            current_task.text = "Timing ${mCurrentTiming!!.mTask.mName}"
+        }
     }
 
     override fun onSaveClicked() {
