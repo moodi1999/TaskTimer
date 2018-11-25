@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -41,11 +42,17 @@ class AddEditActivityFragment : Fragment() {
         mSaveListener = activity as OnSavedClicked
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
     override fun onDetach() {
         Log.i(TAG, "onDetach :::: Start")
         super.onDetach()
         mSaveListener = null
-
+        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +62,7 @@ class AddEditActivityFragment : Fragment() {
         val edt_sort = view.addedit_sortorder
         val edt_name = view.addedit_name
         val edt_disc = view.addedit_desc
+
 
         //val argument = activity!!.intent.extras // FIXME: 8/31/18 change this line to recive data from fragment too
         val argument = arguments
@@ -82,7 +90,7 @@ class AddEditActivityFragment : Fragment() {
        
         view.button_save.setOnClickListener {
             // Update the database if at least one field has changed
-            // - There's no need to hit the databade unless this has happend
+            // - There's no need to hit the database unless this has happen
             var so: Int? = null
             if (edt_sort.length() > 0) {
                 so = edt_sort.text.toString().toInt()
@@ -99,7 +107,7 @@ class AddEditActivityFragment : Fragment() {
                         values.put(TaskContract.Columns.TASKS_NAME, edt_name.text.toString())
 
                     }
-                    if (!edt_disc.text.toString().equals(task!!.mDescription)) {
+                    if (!edt_disc.text.toString().equals(task.mDescription)) {
                         values.put(TaskContract.Columns.TASKS_DESCRIPTION, edt_disc.text.toString())
                     }
                     if (so != task!!.mSortOrder) {

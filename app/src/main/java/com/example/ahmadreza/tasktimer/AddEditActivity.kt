@@ -39,6 +39,7 @@ class AddEditActivity : AppCompatActivity(), AddEditActivityFragment.OnSavedClic
     }
 
     override fun onSaveClicked() {
+        Log.i(TAG, "onSaveClicked: finished")
         finish()
     }
 
@@ -87,7 +88,7 @@ class AddEditActivity : AppCompatActivity(), AddEditActivityFragment.OnSavedClic
         when (item?.itemId) {
             android.R.id.home -> {
                 Log.i(TAG, "onOptionsItemSelected :: home peresed :: CALLED")
-                val fragment = supportFragmentManager.findFragmentById(R.id.fragment) as AddEditActivityFragment
+                val fragment = supportFragmentManager.findFragmentById(R.id.fragment2) as AddEditActivityFragment
                 return if (fragment.canClose()) {
                     super.onOptionsItemSelected(item)
                 } else {

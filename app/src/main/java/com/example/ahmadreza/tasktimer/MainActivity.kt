@@ -21,10 +21,10 @@ import java.net.URL
 class MainActivity : AppCompatActivity()
         , CursorRecyclerViewAdaptor.OnTaskClicklistener
         , AddEditActivityFragment.OnSavedClicked
-        , AppDialog.DialogEvents
-{
+        , AppDialog.DialogEvents {
 
-    private enum class methodCall {SAVE, EDIT, OnCREATE}
+    private enum class methodCall { SAVE, EDIT, OnCREATE, DIALOGcANCEL }
+
     private val TAG = "MainActivity"
 
     /**
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity()
     }
 
     private var mDialog: AlertDialog? = null // moudle scope because we need to dismiss it in onStop
-                                            // e.g when orientation changes to avoid memory leaks
+    // e.g when orientation changes to avoid memory leaks
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i("MainActivity", "onCreate: Start")
@@ -47,11 +47,11 @@ class MainActivity : AppCompatActivity()
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-    /*    if (findViewById<FrameLayout>(R.id.task_detail_container) != null) {
-            // the datail conteiner view will be peresent only in large screen layouts (res/values-sw600dp).
-            // If this peresent, then activity shoulb be in two pane mode
-            mTwoPane = true
-        }*/
+        /*    if (findViewById<FrameLayout>(R.id.task_detail_container) != null) {
+                // the datail conteiner view will be peresent only in large screen layouts (res/values-sw600dp).
+                // If this peresent, then activity shoulb be in two pane mode
+                mTwoPane = true
+            }*/
 
         mTwoPane = (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
 
@@ -83,6 +83,16 @@ class MainActivity : AppCompatActivity()
             }
             R.id.menumain_showDuration -> true
             R.id.menumain_generate -> true
+            android.R.id.home -> {
+                Log.i(TAG, "onOptionsItemSelected :: home peresed :: CALLED")
+                val fragment = supportFragmentManager.findFragmentById(R.id.task_detail_container) as AddEditActivityFragment
+                return if (fragment.canClose()) {
+                    super.onOptionsItemSelected(item)
+                } else {
+                    showConfirmationDialog()
+                    true // indicate we are handling this
+                }
+            }
             else -> super.onOptionsItemSelected(item)
         }
         return super.onOptionsItemSelected(item)
@@ -114,7 +124,7 @@ class MainActivity : AppCompatActivity()
             intent.data = Uri.parse(url)
             try {
                 startActivity(intent)
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Toast.makeText(this, "no browser application found", Toast.LENGTH_SHORT).show();
             }
         }
@@ -125,16 +135,16 @@ class MainActivity : AppCompatActivity()
 
     private fun taskEditRequest(task: Task?) {
         Log.i("MainActivity", "taskEditRequest: Start")
-            Log.i("MainActivity", "taskEditRequest: in wopane mode")
-            val fragment = AddEditActivityFragment()
+        Log.i("MainActivity", "taskEditRequest: in wopane mode")
+        val fragment = AddEditActivityFragment()
 
-            val arguments = Bundle()
-            arguments.putSerializable(Task::class.java.simpleName, task)
-            fragment.arguments = arguments
+        val arguments = Bundle()
+        arguments.putSerializable(Task::class.java.simpleName, task)
+        fragment.arguments = arguments
 
-            supportFragmentManager.beginTransaction()
-                    .replace(R.id.task_detail_container, fragment)
-                    .commit()
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.task_detail_container, fragment)
+                .commit()
         checkTwoPane(methodCall.EDIT)
         Log.i(TAG, "taskEditRequest :::: FINISHED")
     }
@@ -158,17 +168,19 @@ class MainActivity : AppCompatActivity()
 
     override fun onSaveClicked() {
         Log.i(TAG, "onSaveClicked :::: Start")
-        val fragment: Fragment? = supportFragmentManager.findFragmentById(R.id.task_detail_container)
+        var fragment: Fragment? = supportFragmentManager.findFragmentById(R.id.task_detail_container)
         if (fragment != null) {
             supportFragmentManager.beginTransaction()
                     .remove(fragment)
                     .commit()
+            Log.i(TAG, "onSaveClicked: isif")
         }
+        checkTwoPane(methodCall.SAVE)
     }
 
     override fun onPositiveDialogResult(dialogId: Int, args: Bundle) {
         Log.i(TAG, "onPositiveDialogResult: ")
-        when(dialogId){
+        when (dialogId) {
             DIALOG_ID_DELETE -> {
                 val taskId = args.getLong("TaskId")
                 if (BuildConfig.DEBUG && taskId == 0L) throw AssertionError("task Id is zero")
@@ -184,13 +196,26 @@ class MainActivity : AppCompatActivity()
 
     override fun onNegativeDialogResult(dialogId: Int, args: Bundle) {
         Log.i(TAG, "onNegativeDialogResult: ")
-        when(dialogId){
+        when (dialogId) {
             DIALOG_ID_DELETE -> {
                 // No action requaired
             }
 
             DIALOG_ID_CANCEL -> {
-                finish()
+                val fmanager = supportFragmentManager
+                val fragment = fmanager.findFragmentById(R.id.task_detail_container)
+                if (fragment != null) {
+                    supportFragmentManager.beginTransaction()
+                            .remove(fragment)
+                            .commit()
+                    if (mTwoPane) {
+                        finish()
+                    } else {
+                        checkTwoPane(methodCall.DIALOGcANCEL)
+                    }
+                } else {
+                    finish()
+                }
             }
         }
 
@@ -203,21 +228,11 @@ class MainActivity : AppCompatActivity()
     override fun onBackPressed() {
         Log.i(TAG, "onBackPressed :::: Start")
         val fManager = supportFragmentManager
-        val fragment: AddEditActivityFragment? = fManager.findFragmentById(R.id.task_detail_container) as AddEditActivityFragment
-        if (fragment == null || fragment.canClose()){
+        val fragment: AddEditActivityFragment? = fManager.findFragmentById(R.id.task_detail_container) as? AddEditActivityFragment
+        if (fragment == null || fragment.canClose()) {
             super.onBackPressed()
-        }else{
-            val dialog = AppDialog()
-            val args = Bundle()
-            args.run {
-
-                putInt(AppDialog.DIALOG_ID, DIALOG_ID_CANCEL)
-                putString(AppDialog.DIALOG_MESSAGE, getString(R.string.cancelEditDiag_message))
-                putInt(AppDialog.DIALOG_POSITIVE_RID, R.string.cancelEditDiag_positive_caption)
-                putInt(AppDialog.DIALOG_NEGATIVE_RID, R.string.cancelEditDiag_negative_message)
-            }
-            dialog.arguments = args
-            dialog.show(fragmentManager, null)
+        } else {
+            showConfirmationDialog()
         }
     }
 
@@ -233,10 +248,10 @@ class MainActivity : AppCompatActivity()
         super.onAttachFragment(fragment)
     }
 
-    private fun checkTwoPane(method: methodCall){
+    private fun checkTwoPane(method: methodCall) {
         val addEditLayout = findViewById<View>(R.id.task_detail_container)
         val main = findViewById<View>(R.id.fragment2)
-        when(method){
+        when (method) {
             methodCall.OnCREATE -> {
                 val manager = supportFragmentManager
                 //If the AddeditActivity fragment exist , we are editing
@@ -247,11 +262,11 @@ class MainActivity : AppCompatActivity()
                     Log.i(TAG, "onCreate: twoPane mode")
                     main.visibility = View.VISIBLE
                     addEditLayout.visibility = View.VISIBLE
-                }else if (editing){
+                } else if (editing) {
                     Log.i(TAG, "onCreate: single pane editing ")
                     //hide the left hand fragment , to make room for editing
                     main.visibility = View.GONE
-                }else{
+                } else {
                     Log.i(TAG, "onCreate: not editing")
                     //show left hand fragment
                     main.visibility = View.VISIBLE
@@ -269,7 +284,15 @@ class MainActivity : AppCompatActivity()
             }
 
             methodCall.SAVE -> {
-                if (!mTwoPane){
+                if (!mTwoPane) {
+                    //we've just removed the editing fragment so hide the frame
+                    addEditLayout.visibility = View.GONE
+                    main.visibility = View.VISIBLE
+                }
+            }
+
+            methodCall.DIALOGcANCEL -> {
+                if (!mTwoPane) {
                     //we've just removed the editing fragment so hide the frame
                     addEditLayout.visibility = View.GONE
                     main.visibility = View.VISIBLE
@@ -278,4 +301,17 @@ class MainActivity : AppCompatActivity()
         }
     }
 
+    private fun showConfirmationDialog() {
+        val dialog = AppDialog()
+        val args = Bundle()
+        args.run {
+            putInt(AppDialog.DIALOG_ID, DIALOG_ID_CANCEL)
+            putString(AppDialog.DIALOG_MESSAGE, getString(R.string.cancelEditDiag_message))
+            putInt(AppDialog.DIALOG_POSITIVE_RID, R.string.cancelEditDiag_positive_caption)
+            putInt(AppDialog.DIALOG_NEGATIVE_RID, R.string.cancelEditDiag_negative_message)
+        }
+
+        dialog.arguments = args
+        dialog.show(fragmentManager, null)
+    }
 }
